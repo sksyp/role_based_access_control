@@ -1,7 +1,5 @@
 import itertools
 
-__all__ = ["Registry"]
-
 
 class Registry(object):
     """The registry of access control list."""
@@ -14,7 +12,6 @@ class Registry(object):
 
     def add_role(self, role, parents=None):
         """Add a role or append parents roles to a special role.
-        All added roles should be hashable.
         """
         if parents is None:
             parents = []
@@ -23,7 +20,6 @@ class Registry(object):
 
     def add_resource(self, resource, parents=None):
         """Add a resource or append parents resources to a special resource.
-        All added resources should be hashable.
         """
         if parents is None:
             parents = []
@@ -31,31 +27,17 @@ class Registry(object):
         self._resources[resource].update(parents)
 
     def allow(self, role, operation, resource, assertion=None):
-        """Add a allowed rule.
-
-        The added rule will allow the role and its all children roles to
-        operate the resource.
-        """
         assert not role or role in self._roles
         assert not resource or resource in self._resources
         self._allowed[role, operation, resource] = assertion
 
     def deny(self, role, operation, resource, assertion=None):
-        """Add a denied rule.
-
-        The added rule will deny the role and its all children roles to
-        operate the resource.
-        """
         assert not role or role in self._roles
         assert not resource or resource in self._resources
         self._denied[role, operation, resource] = assertion
 
     def is_allowed(self, role, operation, resource):
         """Check the permission.
-
-        If the access is denied, this method will return False; if the access
-        is allowed, this method will return True; if there is not any rule
-        for the access, this method will return None.
         """
         assert not role or role in self._roles
         assert not resource or resource in self._resources
@@ -90,6 +72,9 @@ class Registry(object):
             elif is_current_allowed is True:
                 is_allowed = True
         return is_allowed
+
+    def get_resources(self):
+        return self._resources
 
 
 def get_family(all_parents, current):
